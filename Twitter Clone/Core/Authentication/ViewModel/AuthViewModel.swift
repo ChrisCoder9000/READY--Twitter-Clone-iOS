@@ -7,9 +7,12 @@
 
 import SwiftUI
 import Firebase
+import FirebaseAuth
 
 class AuthViewModel: ObservableObject {
     @Published var userSession: User?
+    @Published var didAuthenticatedUser = false
+    private var tempUserSession: User?
     
     init() {
         self.userSession = Auth.auth().currentUser
@@ -38,9 +41,7 @@ class AuthViewModel: ObservableObject {
             }
             
             guard let user = result?.user else { return }
-            self.userSession = user
-            
-            print("DEBUG: registered successfully, user is \(self.userSession)")
+            self.tempUserSession = user
             
             let data = [
                 "email": email,
@@ -53,6 +54,7 @@ class AuthViewModel: ObservableObject {
                 .document(user.uid)
                 .setData(data) { _ in
                     print("DEBUG: Did upload user data..")
+                    self.didAuthenticatedUser = true
                 }
         }
     }
@@ -60,5 +62,17 @@ class AuthViewModel: ObservableObject {
     func signOut() {
         userSession = nil
         try? Auth.auth().signOut()
+    }
+    
+    func uploadProfileImage(_ image: UIImage) {
+        guard let uid = tempUserSession?.uid else { return }
+        
+        ImageUploader.uploadImage(image: image) { profileImageUrl in
+            Firestore.firestore().collection("users")
+                .document(uid)
+                .updateData(["profileImageUrl": profileImageUrl]) { _ in
+                    self.userSession = self.tempUserSession
+                }
+        }
     }
 }
