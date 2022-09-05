@@ -9,7 +9,21 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var showMenu = false
+    @EnvironmentObject var viewModel: AuthViewModel
+    
     var body: some View {
+        Group {
+            if viewModel.userSession == nil {
+                LoginView()
+            } else {
+                mainInterfaceView
+            }
+        }
+    }
+}
+
+extension ContentView {
+    var mainInterfaceView: some View {
         ZStack(alignment: .topLeading) {
             MainTabView()
                 .navigationBarHidden(showMenu)
