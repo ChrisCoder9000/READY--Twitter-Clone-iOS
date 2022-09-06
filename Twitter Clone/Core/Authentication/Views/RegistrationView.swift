@@ -48,7 +48,7 @@ struct RegistrationView: View {
                 HStack {
                     Text("Already have an account?")
                         .font(.footnote)
-                    Text("Sign Ip")
+                    Text("Sign Up")
                         .font(.caption)
                         .fontWeight(.semibold)
                 }

@@ -6,49 +6,55 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SideMenuView: View {
     @EnvironmentObject var authVm: AuthViewModel
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
-            VStack(alignment: .leading) {
-                Circle()
-                    .frame(width: 48, height: 48)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Bruce Wayne")
-                        .font(.headline)
-                    Text("@batman")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                UserStatsView()
-                    .padding(.vertical)
-            }
-            .padding(.leading)
-            
-            ForEach(SideMenuViewModel.allCases, id: \.rawValue) { vM in
-                if vM == .profile {
-                    NavigationLink {
-                        ProfileView()
-                    } label: {
-                        SideMenuOptionRowView(viewModel: vM)
+        if let user = authVm.currentUser {
+                VStack(alignment: .leading, spacing: 32) {
+                    VStack(alignment: .leading) {
+                        KFImage(URL(string: user.profileImageUrl))
+                            .resizable()
+                            .scaledToFill()
+                            .clipShape(Circle())
+                            .frame(width: 48, height: 48)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(user.fullname)
+                                .font(.headline)
+                            Text("@\(user.username)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        UserStatsView()
+                            .padding(.vertical)
                     }
-                } else if vM == .logout {
-                    Button {
-                        authVm.signOut()
-                    } label: {
-                        SideMenuOptionRowView(viewModel: vM)
-                    }
+                    .padding(.leading)
+                    
+                    ForEach(SideMenuViewModel.allCases, id: \.rawValue) { vM in
+                        if vM == .profile {
+                            NavigationLink {
+                                ProfileView(user: user)
+                            } label: {
+                                SideMenuOptionRowView(viewModel: vM)
+                            }
+                        } else if vM == .logout {
+                            Button {
+                                authVm.signOut()
+                            } label: {
+                                SideMenuOptionRowView(viewModel: vM)
+                            }
 
-                } else {
-                    SideMenuOptionRowView(viewModel: vM)
+                        } else {
+                            SideMenuOptionRowView(viewModel: vM)
+                        }
+                    }
+                    
+                    Spacer()
                 }
-            }
-            
-            Spacer()
+                .background(.white)
         }
-        .background(.white)
     }
 }
 
