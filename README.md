@@ -5,7 +5,7 @@ UI created with SwiftUI and for the backend has been used Firebase
 
 check images folder to see the screenshots
 
-##Functionalities: 
+## Functionalities: 
 - Create users (Login/SignUp)
 - Personal Profile
 - SideMenu
